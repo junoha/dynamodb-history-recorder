@@ -10,6 +10,7 @@ import { PolicyStatement } from '@aws-cdk/aws-iam';
 export interface DynamoDbHistoryRecorderStackProps extends cdk.StackProps {
   bucket: string;
   prefix: string;
+  hivePartition: boolean;
 }
 
 export class DynamoDbHistoryRecorderStack extends cdk.Stack {
@@ -77,6 +78,7 @@ export class DynamoDbHistoryRecorderStack extends cdk.Stack {
    */
   private createDeliveryStream(scope: cdk.Construct, props: DynamoDbHistoryRecorderStackProps): CfnDeliveryStream {
     const firehoseRole = this.createFirehoseRole(scope);
+    const prefix = props.hivePartition ? `${props.prefix}/dest/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/` : `${props.prefix}/dest/`;
 
     // Check buffering config if needed
     return new CfnDeliveryStream(scope, 'ddb-history-recorder-kdh', {
@@ -88,12 +90,12 @@ export class DynamoDbHistoryRecorderStack extends cdk.Stack {
       },
       extendedS3DestinationConfiguration: {
         bucketArn: this.existingS3Bucket.bucketArn,
-        prefix: `${props.prefix}/dest/year=!{timestamp:yyyy}/month=!{timestamp:MM}/day=!{timestamp:dd}/hour=!{timestamp:HH}/`,
+        prefix: prefix,
         errorOutputPrefix: `${props.prefix}/error/`,
         roleArn: firehoseRole.roleArn,
         bufferingHints: {
-          intervalInSeconds: 180,
-          sizeInMBs: 3
+          intervalInSeconds: 600,
+          sizeInMBs: 128
         },
         compressionFormat: 'GZIP',
         cloudWatchLoggingOptions: {
@@ -108,7 +110,7 @@ export class DynamoDbHistoryRecorderStack extends cdk.Stack {
             {
               type: 'Lambda',
               parameters: [
-                { parameterName: 'BufferIntervalInSeconds', parameterValue: '180' },
+                { parameterName: 'BufferIntervalInSeconds', parameterValue: '600' },
                 { parameterName: 'BufferSizeInMBs', parameterValue: '3' },
                 { parameterName: 'LambdaArn', parameterValue: this.transformationFunc.functionArn },
                 { parameterName: 'NumberOfRetries', parameterValue: '3' },
