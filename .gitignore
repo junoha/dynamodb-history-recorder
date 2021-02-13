@@ -1,6 +1,8 @@
 tmp/
 *.zip
 
+!cdk/lib/lambda/index.js
+
 # Logs
 logs
 *.log
