@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
+import { App, Tags } from 'aws-cdk-lib';
 import { DynamoDbHistoryRecorderStack, DynamoDbHistoryRecorderStackProps } from '../lib/ddb-history-recorder';
-import { Tags } from '@aws-cdk/core';
 
 /**
  * Validate and get parameter
  * @param app App
  */
-function validateAndGetParameter(app: cdk.App) {
+function validateAndGetParameter(app: App) {
   const bucket: string = app.node.tryGetContext('s3-bucket') ?? process.env.S3_BUCKET;
   if (!bucket) throw new Error('s3-bucket must be set. -c s3-bucket=xxx or S3_BUCKET=xxx');
 
@@ -26,7 +25,7 @@ function validateAndGetParameter(app: cdk.App) {
  * Entry point
  */
 function main() {
-  const app = new cdk.App();
+  const app = new App();
   const param = validateAndGetParameter(app);
 
   const props: DynamoDbHistoryRecorderStackProps = {
