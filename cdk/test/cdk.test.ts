@@ -1,13 +1,18 @@
 import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert';
-import * as cdk from '@aws-cdk/core';
-import * as Cdk from '../lib/ddb-history-recorder';
+import { App } from 'aws-cdk-lib';
+import { DynamoDbHistoryRecorderStack, DynamoDbHistoryRecorderStackProps } from '../lib/ddb-history-recorder';
 
 test('Empty Stack', () => {
-    const app = new cdk.App();
-    // WHEN
-    const stack = new Cdk.CdkStack(app, 'MyTestStack');
-    // THEN
-    expectCDK(stack).to(matchTemplate({
-      "Resources": {}
-    }, MatchStyle.EXACT))
+  const app = new App();
+  const props: DynamoDbHistoryRecorderStackProps = {
+    bucket: '',
+    prefix: '',
+    hivePartition: false,
+  };
+  // WHEN
+  const stack = new DynamoDbHistoryRecorderStack(app, 'MyTestStack', props);
+  // THEN
+  expectCDK(stack).to(matchTemplate({
+    "Resources": {}
+  }, MatchStyle.EXACT))
 });
