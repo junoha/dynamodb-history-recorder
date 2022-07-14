@@ -3,7 +3,6 @@
 
 - [About](#about)
 - [Usage](#usage)
-- [Developing](#developing)
 
 ## About <a name = "about"></a>
 
@@ -18,13 +17,13 @@ Save DynamoDB history into S3 via Kinesis Data Streams and Kinesis Data Firehose
 $ cd cdk
 
 # Use context parameter
-$ cdk deploy -c s3-bucket=<bucket-name> -c s3-prefix=<prefix>
+$ npx cdk deploy -c s3-bucket=<bucket-name> -c s3-prefix=<prefix>
 
 # Or use environment variables
-$ S3_BUCKET=<bucket-name> S3_PREFIX=<prefix> cdk deploy
+$ S3_BUCKET=<bucket-name> S3_PREFIX=<prefix> npx cdk deploy
 
 # If you use hive partition, set use-hive-partition=true or USE_HIVE_PARTITION=true. * default is false
-$ cdk deploy -c s3-bucket=<bucket-name> -c s3-prefix=<prefix> -c use-hive-partition=true
+$ npx cdk deploy -c s3-bucket=<bucket-name> -c s3-prefix=<prefix> -c use-hive-partition=true
 $ S3_BUCKET=<bucket-name> S3_PREFIX=<prefix> USE_HIVE_PARTITION=true cdk deploy
 ```
 
@@ -167,10 +166,10 @@ TBLPROPERTIES (
 ```
 
 
-#### Create table for KCL checkpoint
+#### Create table for KCL lease table
 
 ```sql
-CREATE EXTERNAL TABLE `kcl_checkpoint`(
+CREATE EXTERNAL TABLE `kcl_lease_table_history`(
   `recordid`                    string, 
   `approximatearrivaltimestamp` bigint, 
   `eventid`                     string, 
@@ -225,16 +224,6 @@ TBLPROPERTIES (
   'compressionType'='gzip', 
   'typeOfData'='file'
 );
-```
-
-
-
-### Developing <a name = "developing"></a>
-
-You can manually deploy data transformation Lambda function 
-```shell-session
-$ cd cdk/lib/lambda
-$ LAMBDA_ARN=<lambda-arn> npm run deploy
 ```
 
 ## License Summary
