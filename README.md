@@ -178,6 +178,7 @@ CREATE EXTERNAL TABLE `kcl_lease_table_history`(
   `approximatecreationdatetime` bigint, 
   `sizebytes`                   int,
   `newimage` struct<
+    leaseOwner: string,
     leaseCounter:int,
     checkpoint:string,
     leaseKey:string,
@@ -187,6 +188,7 @@ CREATE EXTERNAL TABLE `kcl_lease_table_history`(
     startingHashKey:string
   >,
   `oldimage` struct<
+    leaseOwner: string,
     leaseCounter:int,
     checkpoint:string,
     leaseKey:string,
